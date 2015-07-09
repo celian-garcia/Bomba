@@ -61,8 +61,11 @@
       light.intensity = 2;
       console.log(light);
 
-      var cuerpo;
-      // Load objects from aerosol
+      var cuerpo, luz, fondo;
+      // Create the "God Rays" effect (volumetric light scattering)
+      var godrays = new BABYLON.VolumetricLightScatteringPostProcess('godrays', 1.0, camera, null, 100, BABYLON.Texture.BILINEAR_SAMPLINGMODE, engine, false);
+
+      // Load CUERPO
       BABYLON.SceneLoader.ImportMesh(
         "CUERPO", "", "aerosol.babylon", scene, function (meshes, particleSystems) {
 
@@ -71,13 +74,38 @@
           );
 
           cuerpo = meshes[0];
-          console.log(material);
           
           cuerpo.material = material;
-
           cuerpo.material.backFaceCulling = false;
-          cuerpo.material.diffuseTexture = new BABYLON.Texture("texture1.png", scene);
           cuerpo.material.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+          cuerpo.material.diffuseTexture = new BABYLON.Texture(
+            "texture1.png", scene
+          );
+        }
+      );
+      // Load LUZ
+      BABYLON.SceneLoader.ImportMesh(
+        "LUZ", "", "aerosol.babylon", scene, function (meshes, particleSystems) {
+
+          luz = meshes[0];
+
+          godrays.mesh = luz;
+        }
+      );
+      // Load FONDO
+      BABYLON.SceneLoader.ImportMesh(
+        "FONDO", "", "aerosol.babylon", scene, function (meshes, particleSystems) {
+
+          var material = new BABYLON.StandardMaterial(
+            "Texture FONDO", scene
+          );
+
+          fondo = meshes[0];
+          
+          fondo.material = material;
+          fondo.material.backFaceCulling = false;
+          fondo.material.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+          fondo.material.diffuseColor = new BABYLON.Color3(0, 0, 0);
         }
       );
 
