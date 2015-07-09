@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+<head>
+   <meta charset="utf-8">
+   <title>STREET-LIGHT</title>
+
+   <style>
+      html, body {
+         overflow: hidden;
+         width: 100%;
+         height: 100%;
+         margin: 0;
+         padding: 0;
+      }
+
+      #renderCanvas {
+         width: 100%;
+         height: 100%;
+         touch-action: none;
+      }
+   </style>
+
+   <script src="babylon.2.1.js"></script>
+   <!--<script src="hand.js"></script>
+   <script src="cannon.js"></script>-->  <!-- optional physics engine -->
+</head>
+
+<body>
+  <canvas id="renderCanvas"></canvas>
+
+  <script type="text/javascript">
+
+    // Get the canvas element from our HTML below
+    var canvas = document.querySelector("#renderCanvas");
+
+    // Load the BABYLON 3D engine
+    var engine = new BABYLON.Engine(canvas, true);
+
+    // This begins the creation of a function that we will 'call' just after it's built
+    var createScene = function () {
+
+      // Now create a basic Babylon Scene object 
+      var scene = new BABYLON.Scene(engine);
+
+      // Change the scene background color to green.
+      scene.clearColor = new BABYLON.Color3(0, 1, 0);
+
+      // Create an "arc rotate" camera
+      var camera = new BABYLON.ArcRotateCamera(
+        "camera", 0, 0.8, 100,
+        new BABYLON.Vector3.Zero(), scene
+      );
+
+      // This attaches the camera to the canvas
+      camera.attachControl(canvas, false);
+
+      // This creates a light, aiming 0,1,0 - to the sky.
+      var light = new BABYLON.HemisphericLight("Light", new BABYLON.Vector3(0, 5, 0), scene);
+
+      // Dim the light a small amount
+      light.intensity = 2;
+      console.log(light);
+
+      var cuerpo;
+      // Load objects from aerosol
+      BABYLON.SceneLoader.ImportMesh(
+        "CUERPO", "", "aerosol.babylon", scene, function (meshes, particleSystems) {
+
+          var material = new BABYLON.StandardMaterial(
+            "Texture CUERPO", scene
+          );
+
+          cuerpo = meshes[0];
+          console.log(material);
+          
+          cuerpo.material = material;
+
+          // material.diffuseColor = new BABYLON.Color3(1.0, 0.0, 0.0);
+          // material.ambientColor = new BABYLON.Color3(1, 1, 1);
+          cuerpo.material.backFaceCulling = false;
+          cuerpo.material.diffuseTexture = new BABYLON.Texture("texture1.png", scene);
+          cuerpo.material.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+          cuerpo.material.specularPower = 64;
+        }
+      );
+
+
+      // Leave this function
+      return scene;
+
+    };  // End of createScene function
+
+    // Now, call the createScene function that you just finished creating
+    var scene = createScene();
+
+    // Once the scene is loaded, just register a render loop to render it
+    engine.runRenderLoop(function() {
+        scene.render();
+    });
+
+    // // Load the whole scene directly from .babylon file
+    // BABYLON.SceneLoader.Load("", "aerosol.babylon", engine, function (scene) {
+    //   // Wait for textures and shaders to be ready
+    //   scene.executeWhenReady(function () {
+    //       // Attach camera to canvas inputs
+    //       scene.activeCamera.attachControl(canvas);
+
+    //       // This creates a light, aiming 0,1,0 - to the sky.
+    //       var light = new BABYLON.HemisphericLight(
+    //         "HemisphericLight", 
+    //         new BABYLON.Vector3(0, 1, 0), 
+    //         scene
+    //       );
+
+    //        // Dim the light a small amount
+    //        light.intensity = .5;
+
+    //       // Once the scene is loaded, just register a render loop to render it
+    //       engine.runRenderLoop(function() {
+    //           scene.render();
+    //       });
+    //   });
+    // }, function (progress) {
+    //     // To do: give progress feedback to user
+    // });
+
+    // Watch for browser/canvas resize events
+    window.addEventListener("resize", function () {
+       engine.resize();
+    });
+
+  </script>
+
+</body>
+</html>

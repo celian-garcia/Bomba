@@ -1,0 +1,35 @@
+	Babylon.js Exporter version: 1.8.1, Blender version: 2.71 (sub 0)
+========= Conversion from Blender to Babylon.js =========
+	Python World class constructor completed
+	processing begun of material:  aerosol.Material
+	Diffuse texture found
+Error encountered processing image file:  /var/www/private/GRAFISTADOR/STREET-LIGHT/texture1.png, Error:  '/var/www/private/GRAFISTADOR/STREET-LIGHT/texture1.png' and '/var/www/private/GRAFISTADOR/STREET-LIGHT/texture1.png' are the same file
+	processing begun of mesh:  FONDO
+		WARNING:  No materials have been assigned: 
+		num positions      :  74
+		num normals        :  74
+		num uvs            :  0
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  216
+	processing begun of mesh:  LUZ
+		WARNING:  No materials have been assigned: 
+		num positions      :  592
+		num normals        :  592
+		num uvs            :  0
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  3240
+		WARNING: # of 0 area faces found:  216
+	processing begun of mesh:  CUERPO
+		num positions      :  1271
+		num normals        :  1271
+		num uvs            :  2542
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  6696
+	processing begun of camera (FreeCamera):  Camera
+	processing begun of light (POINT):  Lamp
+========= Writing of scene file started =========
+========= Writing of scene file completed =========
+========= end of processing =========
