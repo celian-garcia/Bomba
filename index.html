@@ -2,7 +2,7 @@
 <html>
 <head>
    <meta charset="utf-8">
-   <title>STREET-LIGHT</title>
+   <title>Bomba</title>
 
    <style>
       html, body {
@@ -47,7 +47,7 @@
 
       // Create an "arc rotate" camera
       var camera = new BABYLON.ArcRotateCamera(
-        "camera", 0, 0.8, 100,
+        "camera", 0, 0.8, 25,
         new BABYLON.Vector3.Zero(), scene
       );
 
@@ -75,12 +75,9 @@
           
           cuerpo.material = material;
 
-          // material.diffuseColor = new BABYLON.Color3(1.0, 0.0, 0.0);
-          // material.ambientColor = new BABYLON.Color3(1, 1, 1);
           cuerpo.material.backFaceCulling = false;
           cuerpo.material.diffuseTexture = new BABYLON.Texture("texture1.png", scene);
           cuerpo.material.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
-          cuerpo.material.specularPower = 64;
         }
       );
 
