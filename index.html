@@ -65,24 +65,23 @@
       // Create the "God Rays" effect (volumetric light scattering)
       var godrays = new BABYLON.VolumetricLightScatteringPostProcess('godrays', 1.0, camera, null, 100, BABYLON.Texture.BILINEAR_SAMPLINGMODE, engine, false);
 
+      var cuerpoMaterial = new BABYLON.StandardMaterial(
+         "Texture CUERPO", scene
+      );
+      cuerpoMaterial.backFaceCulling = false;
+      cuerpoMaterial.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+      cuerpoMaterial.diffuseTexture = new BABYLON.Texture(
+         "texture1.png", scene
+      );
+      
       // Load CUERPO
       BABYLON.SceneLoader.ImportMesh(
-        "CUERPO", "", "aerosol.babylon", scene, function (meshes, particleSystems) {
-
-          var material = new BABYLON.StandardMaterial(
-            "Texture CUERPO", scene
-          );
-
-          cuerpo = meshes[0];
-          
-          cuerpo.material = material;
-          cuerpo.material.backFaceCulling = false;
-          cuerpo.material.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
-          cuerpo.material.diffuseTexture = new BABYLON.Texture(
-            "texture1.png", scene
-          );
-        }
+         "CUERPO", "", "aerosol.babylon", scene, function (meshes, particleSystems) {
+            cuerpo = meshes[0];
+            cuerpo.material = cuerpoMaterial;
+         }
       );
+      
       // Load LUZ
       BABYLON.SceneLoader.ImportMesh(
         "LUZ", "", "aerosol.babylon", scene, function (meshes, particleSystems) {
