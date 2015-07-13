@@ -79,6 +79,9 @@
          "CUERPO", "", "aerosol.babylon", scene, function (meshes, particleSystems) {
             cuerpo = meshes[0];
             cuerpo.material = cuerpoMaterial;
+         },
+         function (progress) {
+            console.log(progress);
          }
       );
       
