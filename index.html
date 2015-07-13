@@ -123,32 +123,6 @@
         scene.render();
     });
 
-    // // Load the whole scene directly from .babylon file
-    // BABYLON.SceneLoader.Load("", "aerosol.babylon", engine, function (scene) {
-    //   // Wait for textures and shaders to be ready
-    //   scene.executeWhenReady(function () {
-    //       // Attach camera to canvas inputs
-    //       scene.activeCamera.attachControl(canvas);
-
-    //       // This creates a light, aiming 0,1,0 - to the sky.
-    //       var light = new BABYLON.HemisphericLight(
-    //         "HemisphericLight", 
-    //         new BABYLON.Vector3(0, 1, 0), 
-    //         scene
-    //       );
-
-    //        // Dim the light a small amount
-    //        light.intensity = .5;
-
-    //       // Once the scene is loaded, just register a render loop to render it
-    //       engine.runRenderLoop(function() {
-    //           scene.render();
-    //       });
-    //   });
-    // }, function (progress) {
-    //     // To do: give progress feedback to user
-    // });
-
     // Watch for browser/canvas resize events
     window.addEventListener("resize", function () {
        engine.resize();
