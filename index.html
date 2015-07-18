@@ -32,6 +32,7 @@
 
     // Get the canvas element from our HTML below
     var canvas = document.querySelector("#renderCanvas");
+    canvas.style.visibility = "hidden";
 
     // Load the BABYLON 3D engine
     var engine = new BABYLON.Engine(canvas, true);
@@ -82,6 +83,11 @@
          },
          function (progress) {
             console.log(progress);
+            if (progress.loaded == progress.total) {
+              console.log("loaded !");
+              console.log(canvas);
+              canvas.style.visibility = "visible";
+            }
          }
       );
       
