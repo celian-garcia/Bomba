@@ -28,6 +28,20 @@
 <body>
   <canvas id="renderCanvas"></canvas>
 
+  <!-- utils -->
+  <script type="text/javascript">
+    function WaitForTexture(texture, isReady) {
+      console.log(texture);
+      if (!texture._texture.isReady) {
+        setTimeout(WaitForTexture(texture, isReady), 1);
+      }
+      else {
+        isReady.p = true;
+      }
+    }
+  </script>
+
+  <!-- body -->
   <script type="text/javascript">
 
     // Get the canvas element from our HTML below
@@ -63,6 +77,9 @@
       console.log(light);
 
       var cuerpo, luz, fondo;
+      var cuerpoIsReady = {p: false}, luzIsReady = {p: false}, fondoIsReady = {p: false};
+
+
       // Create the "God Rays" effect (volumetric light scattering)
       var godrays = new BABYLON.VolumetricLightScatteringPostProcess('godrays', 1.0, camera, null, 100, BABYLON.Texture.BILINEAR_SAMPLINGMODE, engine, false);
 
@@ -80,14 +97,8 @@
          "CUERPO", "", "aerosol.babylon", scene, function (meshes, particleSystems) {
             cuerpo = meshes[0];
             cuerpo.material = cuerpoMaterial;
-         },
-         function (progress) {
-            console.log(progress);
-            if (progress.loaded == progress.total) {
-              console.log("loaded !");
-              console.log(canvas);
-              canvas.style.visibility = "visible";
-            }
+            
+            WaitForTexture(cuerpo.material.diffuseTexture, cuerpoIsReady);
          }
       );
       
@@ -98,6 +109,8 @@
           luz = meshes[0];
 
           godrays.mesh = luz;
+
+          luzIsReady.p = true;
         }
       );
       // Load FONDO
@@ -114,9 +127,21 @@
           fondo.material.backFaceCulling = false;
           fondo.material.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
           fondo.material.diffuseColor = new BABYLON.Color3(0, 0, 0);
+
+          fondoIsReady.p = true;
         }
       );
 
+      loading();
+      function loading () {
+        //TODO : add others "isReady"
+        if (cuerpoIsReady.p && luzIsReady.p && fondoIsReady.p) {
+          canvas.style.visibility = "visible";
+        }
+        else {
+          setTimeout(loading, 1);
+        }
+      }
 
       // Leave this function
       return scene;
