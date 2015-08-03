@@ -31,7 +31,6 @@
   <!-- utils -->
   <script type="text/javascript">
     function WaitForTexture(texture, isReady) {
-      console.log(texture);
       if (!texture._texture.isReady) {
         setTimeout(WaitForTexture(texture, isReady), 1);
       }
@@ -74,7 +73,6 @@
 
       // Dim the light a small amount
       light.intensity = 2;
-      console.log(light);
 
       var cuerpo, luz, fondo;
       var cuerpoIsReady = {p: false}, luzIsReady = {p: false}, fondoIsReady = {p: false};
