@@ -30,9 +30,9 @@
 
   <!-- utils -->
   <script type="text/javascript">
-    function WaitForTexture(texture, isReady) {
+    function WaitForTexture(texture, isReady) {      
       if (!texture._texture.isReady) {
-        setTimeout(WaitForTexture(texture, isReady), 1);
+        setTimeout(WaitForTexture(texture, isReady), 5);
       }
       else {
         isReady.p = true;
