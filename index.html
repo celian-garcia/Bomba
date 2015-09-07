@@ -66,9 +66,6 @@
         new BABYLON.Vector3.Zero(), scene
       );
 
-      // This attaches the camera to the canvas
-      camera.attachControl(canvas, false);
-
       // This creates a light, aiming 0,1,0 - to the sky.
       var light = new BABYLON.HemisphericLight("Light", new BABYLON.Vector3(0, 5, 0), scene);
 
@@ -139,6 +136,8 @@
         if (cuerpoIsReady.p && luzIsReady.p && fondoIsReady.p) {
           canvas.style.visibility = "visible";
           loader.style.visibility = "hidden";
+          // This attaches the camera to the canvas
+          camera.attachControl(canvas, false);
         }
         else {
           setTimeout(loading, 1);
