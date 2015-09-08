@@ -85,8 +85,6 @@
         cuerpoIsReady.p = true;
       };
 
-
-
       // Create the "God Rays" effect (volumetric light scattering)
       var godrays = new BABYLON.VolumetricLightScatteringPostProcess('godrays', 1.0, camera, null, 100, BABYLON.Texture.BILINEAR_SAMPLINGMODE, engine, false);
 
@@ -100,7 +98,6 @@
             cuerpo.material.diffuseTexture = new BABYLON.Texture(
                "texture1.png", scene
             );
-            
          }
       );
       
@@ -115,6 +112,7 @@
           luzIsReady.p = true;
         }
       );
+
       // Load FONDO
       BABYLON.SceneLoader.ImportMesh(
         "FONDO", "", "aerosol.babylon", scene, function (meshes, particleSystems) {
@@ -133,7 +131,6 @@
           fondoIsReady.p = true;
         }
       );
-
 
       loading();
       function loading () {
