@@ -29,7 +29,8 @@
       }
    </style>
 
-   <script src="babylon.2.1.js"></script>
+   <!--<script src="babylon.2.1.js"></script>-->
+   <script src="https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/dist/preview%20release%20-%20beta/babylon.2.2.js"></script>
    <!--<script src="hand.js"></script>
    <script src="cannon.js"></script>-->  <!-- optional physics engine -->
 </head>
@@ -52,6 +53,8 @@
     // Load the BABYLON 3D engine
     var engine = new BABYLON.Engine(canvas, true);
 
+    var lensEffect;
+
     // This begins the creation of a function that we will 'call' just after it's built
     var createScene = function () {
 
@@ -59,11 +62,11 @@
       var scene = new BABYLON.Scene(engine);
 
       // Change the scene background color to green.
-      scene.clearColor = new BABYLON.Color3(0, 1, 0);
+      scene.clearColor = new BABYLON.Color3(0.2, 0.2, 0.2);
 
       // Create an "arc rotate" camera
       var camera = new BABYLON.ArcRotateCamera(
-        "camera", 0, 0.8, 25,
+        "camera", 0, 1.5, 250,
         new BABYLON.Vector3.Zero(), scene
       );
 
@@ -76,6 +79,30 @@
       // Dim the light a small amount
       light.intensity = 2;
 
+      lensEffect = new BABYLON.LensRenderingPipeline('lens', {
+        edge_blur: 1.0,
+        chromatic_aberration: 0.0,
+        distortion: 0.0,
+        dof_focus_distance: 200.0,
+        dof_aperture: 25.0,      // set this very high for tilt-shift effect
+        grain_amount: 1.0,
+        dof_pentagon: true,
+        dof_gain: 1.0,
+        dof_threshold: 1.0,
+        dof_darken: 0
+      }, scene, 1.0, camera);
+
+
+      var ground = BABYLON.Mesh.CreateGround("Ground", 200, 200, 10, scene);
+      ground.position = BABYLON.Vector3.Zero();
+      ground.material = new BABYLON.StandardMaterial("Ground Material", scene);
+      ground.material.diffuseColor = new BABYLON.Color3(0, 0, 0);
+      ground.material.specularColor = new BABYLON.Color4(0, 0, 0, 0);
+
+      var box = BABYLON.Mesh.CreateBox("Box", 20, scene);
+      box.position = new BABYLON.Vector3(100, 0, 100);
+      box.scaling.y *= 10;
+
       var cuerpo, luz, fondo;
       var cuerpoIsReady = {p: false}, luzIsReady = {p: false}, fondoIsReady = {p: false};
       var cuerpoMaterial = new BABYLON.StandardMaterial(
@@ -85,8 +112,8 @@
         cuerpoIsReady.p = true;
       };
 
-      // Create the "God Rays" effect (volumetric light scattering)
-      var godrays = new BABYLON.VolumetricLightScatteringPostProcess('godrays', 1.0, camera, null, 100, BABYLON.Texture.BILINEAR_SAMPLINGMODE, engine, false);
+      // // Create the "God Rays" effect (volumetric light scattering)
+      // var godrays = new BABYLON.VolumetricLightScatteringPostProcess('godrays', 0.3, camera, null, 0, BABYLON.Texture.BILINEAR_SAMPLINGMODE, engine, false);
 
       // Load CUERPO
       BABYLON.SceneLoader.ImportMesh(
@@ -98,6 +125,16 @@
             cuerpo.material.diffuseTexture = new BABYLON.Texture(
                "texture1.png", scene
             );
+
+            cuerpo.scaling.x *= 10;
+            cuerpo.scaling.y *= 10;
+            cuerpo.scaling.z *= 10;
+
+            cuerpo.refreshBoundingInfo();
+            var bbox = cuerpo._boundingInfo.boundingBox;
+            var d = bbox.maximumWorld.y - bbox.minimumWorld.y;
+            d*=10;
+            ground.position.y -= d/2;
          }
       );
       
@@ -106,8 +143,11 @@
         "LUZ", "", "aerosol.babylon", scene, function (meshes, particleSystems) {
 
           luz = meshes[0];
+          luz.scaling.x *= 10;
+          luz.scaling.y *= 10;
+          luz.scaling.z *= 10;
 
-          godrays.mesh = luz;
+          // godrays.mesh = luz;
 
           luzIsReady.p = true;
         }
@@ -122,6 +162,9 @@
           );
 
           fondo = meshes[0];
+          fondo.scaling.x *= 10;
+          fondo.scaling.y *= 10;
+          fondo.scaling.z *= 10;
           
           fondo.material = material;
           fondo.material.backFaceCulling = false;
@@ -134,7 +177,7 @@
 
       loading();
       function loading () {
-        if (cuerpoIsReady.p && luzIsReady.p && fondoIsReady.p) {
+        if (cuerpoIsReady.p /*&& luzIsReady.p*/ && fondoIsReady.p) {
           canvas.style.visibility = "visible";
           loader.style.visibility = "hidden";
         }
@@ -147,6 +190,7 @@
       return scene;
 
     };  // End of createScene function
+
 
     // Now, call the createScene function that you just finished creating
     var scene = createScene();
