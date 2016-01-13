@@ -52,57 +52,108 @@
     // Load the BABYLON 3D engine
     var engine = new BABYLON.Engine(canvas, true);
 
-    var lensEffect;
+    var camera, lensEffect;
+    var cuerpo, luz, fondo;
 
     // This begins the creation of a function that we will 'call' just after it's built
     var createScene = function () {
 
+      /*********************
+       * Scene & Camera
+       *******************/
       // Now create a basic Babylon Scene object 
       var scene = new BABYLON.Scene(engine);
+      scene.debugLayer.show();
 
       // Change the scene background color to green.
       scene.clearColor = new BABYLON.Color3(0.2, 0.2, 0.2);
 
       // Create an "arc rotate" camera
-      var camera = new BABYLON.ArcRotateCamera(
-        "camera", 0, 1.5, 250,
+      camera = new BABYLON.ArcRotateCamera(
+        "camera", 0, 1, 250,
         new BABYLON.Vector3.Zero(), scene
       );
+      // Limit zoom
+      camera.lowerRadiusLimit = 200;
+      camera.upperRadiusLimit = 300;
 
       // This attaches the camera to the canvas
       camera.attachControl(canvas);
 
-      // This creates a light, aiming 0,1,0 - to the sky.
-      var light = new BABYLON.HemisphericLight("Light", new BABYLON.Vector3(0, 5, 0), scene);
+      /*********************
+       * LIGHTS
+       *******************/
+      // Very white light designed to render incandescence of enlighten objects
+      var god_light = new BABYLON.HemisphericLight("Light", new BABYLON.Vector3(0, 5, 0), scene);
+      god_light.intensity = 2;
+      god_light.excludedMeshes = [];
 
-      // Dim the light a small amount
-      light.intensity = 2;
+      function excludeMeshOfGodLight(mesh) {
+        god_light.excludedMeshes.push(mesh);
+      }
 
+      // 4 Spot lights to represents real spots
+      var S1_position = new BABYLON.Vector3(-100, 100, 100);
+      var S1_direction = BABYLON.Vector3.Normalize(S1_position).scale(-1);
+      var S2_position = new BABYLON.Vector3(100, 100, 100);
+      var S2_direction = BABYLON.Vector3.Normalize(S2_position).scale(-1);
+      var S3_position = new BABYLON.Vector3(100, 100, -100);
+      var S3_direction = BABYLON.Vector3.Normalize(S3_position).scale(-1);
+      var S4_position = new BABYLON.Vector3(-100, 100, -100);
+      var S4_direction = BABYLON.Vector3.Normalize(S4_position).scale(-1);
+      var spot_lights = [];
+      spot_lights.push(new BABYLON.SpotLight("Spot1", S1_position, S1_direction, 1.5, 2, scene));
+      spot_lights.push(new BABYLON.SpotLight("Spot2", S2_position, S2_direction, 1.5, 2, scene));
+      spot_lights.push(new BABYLON.SpotLight("Spot3", S3_position, S3_direction, 1.5, 2, scene));
+      spot_lights.push(new BABYLON.SpotLight("Spot4", S4_position, S4_direction, 1.5, 2, scene));
+
+      for (spots in spot_lights) {
+        spot_lights.diffuse = new BABYLON.Color3(1, 1, 1);
+        spot_lights.specular = new BABYLON.Color3(1, 1, 1);
+        spot_lights.intensity = 2;
+      }
+      
+      /*********************
+       * POSTPROCESSES
+       *******************/
       lensEffect = new BABYLON.LensRenderingPipeline('lens', {
         edge_blur: 1.0,
         chromatic_aberration: 0.0,
-        distortion: 0.0,
-        dof_focus_distance: 200.0,
-        dof_aperture: 25.0,      // set this very high for tilt-shift effect
+        distortion: 0.7,
+        dof_focus_distance: camera.radius,
+        dof_aperture: 20.0,      // set this very high for tilt-shift effect
         grain_amount: 1.0,
         dof_pentagon: true,
         dof_gain: 1.0,
         dof_threshold: 1.0,
-        dof_darken: 0
+        dof_darken: 0.25
       }, scene, 1.0, camera);
 
 
-      var ground = BABYLON.Mesh.CreateGround("Ground", 200, 200, 10, scene);
-      ground.position = BABYLON.Vector3.Zero();
+      /*********************
+       * Internal objects load
+       *******************/
+      var ground = BABYLON.Mesh.CreateBox("Ground", 1, scene);
+      ground.scaling = new BABYLON.Vector3(200, 20 ,200);
+      ground.position = new BABYLON.Vector3(0, -ground.scaling.y/2 , 0);
       ground.material = new BABYLON.StandardMaterial("Ground Material", scene);
-      ground.material.diffuseColor = new BABYLON.Color3(0, 0, 0);
+      ground.material.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
       ground.material.specularColor = new BABYLON.Color4(0, 0, 0, 0);
+      excludeMeshOfGodLight(ground);
+      // spot_lights.includedOnlyMeshes.push(ground);
 
-      var box = BABYLON.Mesh.CreateBox("Box", 20, scene);
-      box.position = new BABYLON.Vector3(100, 0, 100);
-      box.scaling.y *= 10;
+      var box = BABYLON.Mesh.CreateBox("Box", 1, scene);
+      box.scaling = new BABYLON.Vector3(20, 200, 20);
+      box.position = new BABYLON.Vector3(
+        ground.scaling.x/2 - box.scaling.x/2 + 0.1,
+        -3,
+        ground.scaling.z/2 - box.scaling.z/2 + 0.1
+      );
 
-      var cuerpo, luz, fondo;
+
+      /*********************
+       * External objects load
+       *******************/
       var cuerpoIsReady = {p: false}, luzIsReady = {p: false}, fondoIsReady = {p: false};
       var cuerpoMaterial = new BABYLON.StandardMaterial(
         "Material CUERPO", scene
@@ -111,13 +162,11 @@
         cuerpoIsReady.p = true;
       };
 
-      // // Create the "God Rays" effect (volumetric light scattering)
-      // var godrays = new BABYLON.VolumetricLightScatteringPostProcess('godrays', 0.3, camera, null, 0, BABYLON.Texture.BILINEAR_SAMPLINGMODE, engine, false);
-
       // Load CUERPO
       BABYLON.SceneLoader.ImportMesh(
          "CUERPO", "", "aerosol.babylon", scene, function (meshes, particleSystems) {
             cuerpo = meshes[0];
+            excludeMeshOfGodLight(cuerpo);
             cuerpo.material = cuerpoMaterial;
             cuerpo.material.backFaceCulling = false;
             cuerpo.material.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
@@ -140,13 +189,10 @@
       // Load LUZ
       BABYLON.SceneLoader.ImportMesh(
         "LUZ", "", "aerosol.babylon", scene, function (meshes, particleSystems) {
-
           luz = meshes[0];
           luz.scaling.x *= 10;
           luz.scaling.y *= 10;
           luz.scaling.z *= 10;
-
-          // godrays.mesh = luz;
 
           luzIsReady.p = true;
         }
@@ -155,12 +201,12 @@
       // Load FONDO
       BABYLON.SceneLoader.ImportMesh(
         "FONDO", "", "aerosol.babylon", scene, function (meshes, particleSystems) {
-
           var material = new BABYLON.StandardMaterial(
             "Texture FONDO", scene
           );
 
           fondo = meshes[0];
+          excludeMeshOfGodLight(fondo);
           fondo.scaling.x *= 10;
           fondo.scaling.y *= 10;
           fondo.scaling.z *= 10;
@@ -176,7 +222,7 @@
 
       loading();
       function loading () {
-        if (cuerpoIsReady.p /*&& luzIsReady.p*/ && fondoIsReady.p) {
+        if (cuerpoIsReady.p && luzIsReady.p && fondoIsReady.p) {
           canvas.style.visibility = "visible";
           loader.style.visibility = "hidden";
         }
@@ -196,6 +242,7 @@
 
     // Once the scene is loaded, just register a render loop to render it
     engine.runRenderLoop(function() {
+        lensEffect.setFocusDistance(camera.radius);
         scene.render();
     });
 
